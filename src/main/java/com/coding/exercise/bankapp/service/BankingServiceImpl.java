@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.coding.exercise.bankapp.model.Address;
+import com.coding.exercise.bankapp.model.Contact;
 import com.coding.exercise.bankapp.model.Customer;
 import com.coding.exercise.bankapp.repository.AccountRepository;
 import com.coding.exercise.bankapp.repository.CustomerAccountXRefRepository;
@@ -92,13 +94,27 @@ public class BankingServiceImpl implements BankingService {
      */
     @Override
     public ResponseEntity<Object> updateCustomer(CustomerDetails customerDetails, Long customerNumber) {
-        Optional<Customer> mangeCust = this.customerRepository.findByCustomerNumber(customerNumber);
-       Customer unmanagedCust = bankingServiceHelper.covertCustomerdetails(customerDetails);
-       if(mangeCust.isPresent()){
-           Customer manageCustEntity =mangeCust.get();
+        Optional<Customer> manageCustomerDetails = this.customerRepository.findByCustomerNumber(customerNumber);
+        Customer unmanagedCustomerDetails = bankingServiceHelper.covertCustomerdetails(customerDetails);
+        // check customers ate available or not
+
+        if (manageCustomerDetails.isPresent()) {
+            Customer manageEntityDetails = manageCustomerDetails.get();
+            // write the if condition , if contact details are not empty you can update the contact details
+            
+            if (Optional.ofNullable(unmanagedCustomerDetails.getContactDetails()).isPresent()) {
+                Contact manageContactDetails = manageEntityDetails.getContactDetails();
+                if (manageCustomerDetails != null) {
+                    manageContactDetails.setWorkPhone(unmanagedCustomerDetails.getContactDetails().getHomePhone());
+                    manageContactDetails.setHomePhone(unmanagedCustomerDetails.getContactDetails().getHomePhone());
+                    manageContactDetails.setEmailId(unmanagedCustomerDetails.getContactDetails().getEmailId());
+                } else {
+                    manageEntityDetails.setContactDetails(unmanagedCustomerDetails.getContactDetails());
+                }
+            }
 
 
-       }
+        }
 
         return null;
     }
@@ -132,6 +148,5 @@ public class BankingServiceImpl implements BankingService {
     public void softDeteletCustomerId(Long accountNumber) {
 
     }
-
 
 }
