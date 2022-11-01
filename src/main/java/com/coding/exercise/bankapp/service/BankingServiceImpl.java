@@ -101,7 +101,7 @@ public class BankingServiceImpl implements BankingService {
         if (manageCustomerDetails.isPresent()) {
             Customer manageEntityDetails = manageCustomerDetails.get();
             // write the if condition , if contact details are not empty you can update the contact details
-            
+
             if (Optional.ofNullable(unmanagedCustomerDetails.getContactDetails()).isPresent()) {
                 Contact manageContactDetails = manageEntityDetails.getContactDetails();
                 if (manageCustomerDetails != null) {
@@ -121,7 +121,17 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public ResponseEntity<Object> deleteCustomer(Long customerNumber) {
-        return null;
+
+        Optional<Customer> manageCustomerEntityOpt = this.customerRepository.findByCustomerNumber(customerNumber);
+        if (manageCustomerEntityOpt.isPresent()) {
+            Customer manageCustomerEntity = manageCustomerEntityOpt.get();
+            customerRepository.delete(manageCustomerEntity);
+            return ResponseEntity.status(HttpStatus.OK).body("Successfully deleted by customer Id " + customerNumber);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find customer Number " + customerNumber);
+
+        }
     }
 
     @Override
