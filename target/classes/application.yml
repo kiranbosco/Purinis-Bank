@@ -1,4 +1,4 @@
-server.port: 8989
+server.port: 8000
 server.servlet.context-path: /bank-api
 
 spring.security.user.name: bankapp
@@ -9,3 +9,4 @@ spring:
   h2:
     console:
       enabled: true
+
