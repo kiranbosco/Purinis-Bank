@@ -22,7 +22,7 @@ public interface BankingService {
     
     public ResponseEntity<Object> deleteCustomer(Long customerNumber) ;
     
-    public ResponseEntity<Object> findByAccountNumber(Long accountNumber);
+    public ResponseEntity<Object> findByAccountNumber(AccountInformation accountInformation,Long accountNumber);
     
     public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber);
     

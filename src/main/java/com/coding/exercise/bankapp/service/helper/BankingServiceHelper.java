@@ -1,17 +1,8 @@
 package com.coding.exercise.bankapp.service.helper;
 
+import com.coding.exercise.bankapp.domain.*;
+import com.coding.exercise.bankapp.model.*;
 import org.springframework.stereotype.Component;
-
-import com.coding.exercise.bankapp.domain.AddressDetails;
-import com.coding.exercise.bankapp.domain.BankInformation;
-import com.coding.exercise.bankapp.domain.ContactDetails;
-import com.coding.exercise.bankapp.domain.CustomerDetails;
-import com.coding.exercise.bankapp.domain.TransactionDetails;
-import com.coding.exercise.bankapp.model.Address;
-import com.coding.exercise.bankapp.model.BankInfo;
-import com.coding.exercise.bankapp.model.Contact;
-import com.coding.exercise.bankapp.model.Customer;
-import com.coding.exercise.bankapp.model.Transaction;
 
 @Component
 public class BankingServiceHelper {
@@ -104,4 +95,33 @@ public TransactionDetails convertTransaction(TransactionDetails transactionDetai
                 .txAmount(transactionDetails.getTxAmount())
                 .txDateTime(transactionDetails.getTxDateTime()).build();
 }
+    public Account convertToAccountEntity(AccountInformation accInfo) {
+
+        return Account.builder()
+                .accountType(accInfo.getAccountType())
+                .accountBalance(accInfo.getAccountBalance())
+                .accountNumber(accInfo.getAccountNumber())
+                .accountStatus(accInfo.getAccountStatus())
+                .bankInformation(convertToBankInfoEntity(accInfo.getBankInformation()))
+                .build();
+    }
+public  BankInfo convertToBankInfoEntity(BankInformation bankInformation){
+        return BankInfo.builder()
+                .branchCode(bankInformation.getBranchCode())
+                .branchName(bankInformation.getBranchName())
+                .routingNumber(bankInformation.getRoutingNumber())
+                .branchAddress(convertToAddressEntity(bankInformation.getBranchAddress()))
+                .build();
+}
+    public Address convertToAddressEntity(AddressDetails addressDetails) {
+
+        return Address.builder().address1(addressDetails.getAddress1())
+                .address2(addressDetails.getAddress2())
+                .city(addressDetails.getCity())
+                .state(addressDetails.getState())
+                .zip(addressDetails.getZip())
+                .country(addressDetails.getCountry())
+                .build();
+    }
+
 }

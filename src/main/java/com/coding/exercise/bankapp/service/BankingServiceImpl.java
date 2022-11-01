@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import com.coding.exercise.bankapp.model.Address;
-import com.coding.exercise.bankapp.model.Contact;
-import com.coding.exercise.bankapp.model.Customer;
+import com.coding.exercise.bankapp.model.*;
 import com.coding.exercise.bankapp.repository.AccountRepository;
 import com.coding.exercise.bankapp.repository.CustomerAccountXRefRepository;
 import com.coding.exercise.bankapp.repository.CustomerRepository;
@@ -127,17 +125,27 @@ public class BankingServiceImpl implements BankingService {
             Customer manageCustomerEntity = manageCustomerEntityOpt.get();
             customerRepository.delete(manageCustomerEntity);
             return ResponseEntity.status(HttpStatus.OK).body("Successfully deleted by customer Id " + customerNumber);
-        }
-        else {
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find customer Number " + customerNumber);
 
         }
     }
 
     @Override
-    public ResponseEntity<Object> findByAccountNumber(Long accountNumber) {
-        return null;
+    public ResponseEntity<Object> findByAccountNumber(AccountInformation accountInformation, Long accountNumber) {
+//find the account number is available or not
+        Optional<Account> accountNumberEntityOpt = this.accountRepository.findByAccountNumber(accountNumber);
+        if (accountNumberEntityOpt.isPresent()) {
+            this.accountRepository.save(bankingServiceHelper.convertToAccountEntity(accountInformation));
+        }
+        // Add an entry to the CustomerAccountXRef
+        custAccXRefRepository.save(CustomerAccountXRef.builder()
+                .accountNumber(accountInformation.getAccountNumber())
+                .customerNumber(accountNumber)
+                .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body("New Account created successfully.");
     }
+
 
     @Override
     public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber) {
