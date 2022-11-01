@@ -110,8 +110,6 @@ public class BankingServiceImpl implements BankingService {
                     manageEntityDetails.setContactDetails(unmanagedCustomerDetails.getContactDetails());
                 }
             }
-
-
         }
 
         return null;
@@ -133,27 +131,40 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public ResponseEntity<Object> findByAccountNumber(AccountInformation accountInformation, Long accountNumber) {
-//find the account number is available or not
-        Optional<Account> accountNumberEntityOpt = this.accountRepository.findByAccountNumber(accountNumber);
+        return null;
+    }
+
+
+    public ResponseEntity<Object> findByAccountNumber(Long accountNumber) {
+
+        Optional<Account> accountEntityOpt = accountRepository.findByAccountNumber(accountNumber);
+
+        if(accountEntityOpt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.FOUND).body(bankingServiceHelper.convertToAccountDomain(accountEntityOpt.get()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account Number " + accountNumber + " not found.");
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber) {
+     //find the account number is available or not
+        Optional<Account> accountNumberEntityOpt = this.accountRepository.findByAccountNumber(customerNumber);
         if (accountNumberEntityOpt.isPresent()) {
             this.accountRepository.save(bankingServiceHelper.convertToAccountEntity(accountInformation));
         }
         // Add an entry to the CustomerAccountXRef
         custAccXRefRepository.save(CustomerAccountXRef.builder()
                 .accountNumber(accountInformation.getAccountNumber())
-                .customerNumber(accountNumber)
+                .customerNumber(customerNumber)
                 .build());
         return ResponseEntity.status(HttpStatus.CREATED).body("New Account created successfully.");
     }
 
-
-    @Override
-    public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber) {
-        return null;
-    }
-
     @Override
     public ResponseEntity<Object> transferDetails(TransferDetails transferDetails, Long customerNumber) {
+
         return null;
     }
 

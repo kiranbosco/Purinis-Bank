@@ -1,5 +1,6 @@
 package com.coding.exercise.bankapp.controller;
 
+import com.coding.exercise.bankapp.domain.AccountInformation;
 import com.coding.exercise.bankapp.domain.CustomerDetails;
 import com.coding.exercise.bankapp.service.BankingServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -32,4 +33,6 @@ public class CustomerController {
     public ResponseEntity<Object> deleteCustomerInfo(@PathVariable Long customerNumber) {
         return this.bankingServiceImpl.deleteCustomer(customerNumber);
     }
+
+
 }

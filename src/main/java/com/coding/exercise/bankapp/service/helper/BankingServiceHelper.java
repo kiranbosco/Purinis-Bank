@@ -124,4 +124,54 @@ public  BankInfo convertToBankInfoEntity(BankInformation bankInformation){
                 .build();
     }
 
+    public AccountInformation convertToAccountDomain(Account account) {
+
+        return AccountInformation.builder()
+                .accountType(account.getAccountType())
+                .accountBalance(account.getAccountBalance())
+                .accountNumber(account.getAccountNumber())
+                .accountStatus(account.getAccountStatus())
+                .bankInformation(convertToBankInfoDomain(account.getBankInformation()))
+                .build();
+    }
+    public BankInformation convertToBankInfoDomain(BankInfo bankInfo) {
+
+        return BankInformation.builder()
+                .branchCode(bankInfo.getBranchCode())
+                .branchName(bankInfo.getBranchName())
+                .routingNumber(bankInfo.getRoutingNumber())
+                .branchAddress(convertToAddressDomain(bankInfo.getBranchAddress()))
+                .build();
+    }
+    public CustomerDetails convertToCustomerDomain(Customer customer) {
+
+        return CustomerDetails.builder()
+                .firstName(customer.getFirstName())
+                .middleName(customer.getMiddleName())
+                .lastName(customer.getLastName())
+                .customerNumber(customer.getCustomerNumber())
+                .status(customer.getStatus())
+                .contactDetails(convertToContactDomain(customer.getContactDetails()))
+                .customerAddress(convertToAddressDomain(customer.getCustomerAddress()))
+                .build();
+    }
+    public ContactDetails convertToContactDomain(Contact contact) {
+
+        return ContactDetails.builder()
+                .emailId(contact.getEmailId())
+                .homePhone(contact.getHomePhone())
+                .workPhone(contact.getWorkPhone())
+                .build();
+    }
+    public AddressDetails convertToAddressDomain(Address address) {
+
+        return AddressDetails.builder().address1(address.getAddress1())
+                .address2(address.getAddress2())
+                .city(address.getCity())
+                .state(address.getState())
+                .zip(address.getZip())
+                .country(address.getCountry())
+                .build();
+    }
+
 }
