@@ -1,11 +1,10 @@
 package com.coding.exercise.bankapp.repository;
 
-import java.util.Optional;
-
+import com.coding.exercise.bankapp.model.Customer;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.coding.exercise.bankapp.model.Customer;
+import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends CrudRepository<Customer, String> {

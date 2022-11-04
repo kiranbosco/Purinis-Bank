@@ -1,12 +1,8 @@
 package com.coding.exercise.bankapp.domain;
 
-import java.util.Date;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor

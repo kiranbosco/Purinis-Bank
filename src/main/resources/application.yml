@@ -1,12 +1,1 @@
-server.port: 8000
-server.servlet.context-path: /bank-api
-
-spring.security.user.name: bankapp
-spring.security.user.password: changeit
-
-# Enabling H2 Console
-spring:
-  h2:
-    console:
-      enabled: true
-
+server.port : 8989

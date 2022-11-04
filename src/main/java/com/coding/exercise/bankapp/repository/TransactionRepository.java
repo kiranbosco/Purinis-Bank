@@ -1,12 +1,11 @@
 package com.coding.exercise.bankapp.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.coding.exercise.bankapp.model.Transaction;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.coding.exercise.bankapp.model.Transaction;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, String> {
