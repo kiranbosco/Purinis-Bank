@@ -7,12 +7,13 @@ import com.coding.exercise.bankapp.domain.TransferDetails;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BankingService {
 
-    public List<CustomerDetails> findAll();
-    
-    public ResponseEntity<Object> addCustomer(CustomerDetails customerDetails);
+    public List<CustomerDetails> findAll() throws Exception;
+
+    public ResponseEntity<Object> addCustomer(CustomerDetails customerDetails) throws Exception;
     
     public CustomerDetails findByCustomerNumber(Long customerNumber);
     
