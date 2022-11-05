@@ -29,4 +29,8 @@ public class CustomerController {
         return bankingService.addCustomer(customer);
     }
 
+    @GetMapping(path = "{/customerNumber}")
+    public CustomerDetails getCustomer(@PathVariable Long customerNumber) {
+        return bankingService.findByCustomerNumber(customerNumber);
+    }
 }

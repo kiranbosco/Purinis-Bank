@@ -69,8 +69,13 @@ public class BankingServiceImpl implements BankingService {
         return ResponseEntity.status(HttpStatus.CREATED).body("Data successfully created..!");
     }
 
-    @Override
     public CustomerDetails findByCustomerNumber(Long customerNumber) {
+
+        Optional<Customer> customerEntityOpt = customerRepository.findByCustomerNumber(customerNumber);
+
+        if(customerEntityOpt.isPresent())
+            return bankingServiceHelper.convertToCustomerDomain(customerEntityOpt.get());
+
         return null;
     }
 
