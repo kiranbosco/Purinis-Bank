@@ -34,4 +34,10 @@ public class CustomerController {
 
         return bankingService.findByCustomerNumber(customerNumber);
     }
+
+    @PutMapping(path = "/{customerNumber}")
+    public ResponseEntity<Object> updatecustomer(@RequestBody CustomerDetails customerDetails, @PathVariable Long customerNumber) {
+        return bankingService.updateCustomer(customerDetails, customerNumber);
+
+    }
 }

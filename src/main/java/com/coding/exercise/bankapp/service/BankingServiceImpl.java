@@ -4,6 +4,8 @@ import com.coding.exercise.bankapp.domain.AccountInformation;
 import com.coding.exercise.bankapp.domain.CustomerDetails;
 import com.coding.exercise.bankapp.domain.TransactionDetails;
 import com.coding.exercise.bankapp.domain.TransferDetails;
+import com.coding.exercise.bankapp.model.Address;
+import com.coding.exercise.bankapp.model.Contact;
 import com.coding.exercise.bankapp.model.Customer;
 import com.coding.exercise.bankapp.repository.AccountRepository;
 import com.coding.exercise.bankapp.repository.CustomerAccountXRefRepository;
@@ -80,7 +82,51 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public ResponseEntity<Object> updateCustomer(CustomerDetails customerDetails, Long customerNumber) {
-        return null;
+
+        // get the customerNumber first
+        Optional<Customer> manageCustomerEntityOpt = this.customerRepository.findByCustomerNumber(customerNumber);
+        // get the bankingServiceHelper data
+        Customer unmanageCustomerEntity = bankingServiceHelper.convertoCustomerEntity(customerDetails);
+        if (manageCustomerEntityOpt.isPresent()) {
+            Customer manageCustomerEntity = manageCustomerEntityOpt.get();
+            //Update the conntact details
+            if (Optional.ofNullable(unmanageCustomerEntity.getContactDetails()).isPresent()) {
+                Contact manageContact = manageCustomerEntity.getContactDetails();
+                if (manageContact != null) {
+                    manageContact.setEmailId(unmanageCustomerEntity.getContactDetails().getEmailId());
+                    manageContact.setHomePhone(unmanageCustomerEntity.getContactDetails().getHomePhone());
+                    manageContact.setWorkPhone(unmanageCustomerEntity.getContactDetails().getWorkPhone());
+                } else {
+                    manageCustomerEntity.setContactDetails(unmanageCustomerEntity.getContactDetails());
+                }
+                //update address details
+                if (Optional.ofNullable(unmanageCustomerEntity.getCustomerAddress()).isPresent()) {
+                    Address manageaddress = manageCustomerEntity.getCustomerAddress();
+                    if (manageaddress != null) {
+                        manageaddress.setCity(unmanageCustomerEntity.getCustomerAddress().getCity());
+                        manageaddress.setState(unmanageCustomerEntity.getCustomerAddress().getState());
+                        manageaddress.setZip(unmanageCustomerEntity.getCustomerAddress().getZip());
+                        manageaddress.setCountry(unmanageCustomerEntity.getCustomerAddress().getCountry());
+                        manageaddress.setAddress1(unmanageCustomerEntity.getCustomerAddress().getAddress1());
+                        manageaddress.setAddress2(unmanageCustomerEntity.getCustomerAddress().getAddress2());
+                    }
+                    else {
+                        manageCustomerEntity.setCustomerAddress(unmanageCustomerEntity.getCustomerAddress());
+                    }
+                    manageCustomerEntity.setUpdateDateTime(new Date());
+                    manageCustomerEntity.setStatus(unmanageCustomerEntity.getStatus());
+                    manageCustomerEntity.setFirstName(unmanageCustomerEntity.getFirstName());
+                    manageCustomerEntity.setMiddleName(unmanageCustomerEntity.getMiddleName());
+                    manageCustomerEntity.setLastName(unmanageCustomerEntity.getLastName());
+                    manageCustomerEntity.setUpdateDateTime(new Date());
+                    //save customer update details here
+                    customerRepository.save(manageCustomerEntity);
+                    return ResponseEntity.status(HttpStatus.OK).body("Customer details are updated..!");
+                }
+
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer Number " + customerNumber + " not found.");
     }
 
     @Override
