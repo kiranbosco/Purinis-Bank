@@ -20,6 +20,8 @@ public interface BankingService {
     public ResponseEntity<Object> updateCustomer(CustomerDetails customerDetails, Long customerNumber);
     
     public ResponseEntity<Object> deleteCustomer(Long customerNumber) ;
+
+    public ResponseEntity<Object> softDeleteCustomerId(Long customerNumber) throws Exception;
     
     public ResponseEntity<Object> findByAccountNumber(Long accountNumber);
     

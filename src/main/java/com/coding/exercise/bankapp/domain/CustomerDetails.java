@@ -17,7 +17,7 @@ public class CustomerDetails {
     
     private Long customerNumber;
     
-    private String status;
+    private Integer status;
     
     private AddressDetails customerAddress;
     

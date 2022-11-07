@@ -109,8 +109,7 @@ public class BankingServiceImpl implements BankingService {
                         manageaddress.setCountry(unmanageCustomerEntity.getCustomerAddress().getCountry());
                         manageaddress.setAddress1(unmanageCustomerEntity.getCustomerAddress().getAddress1());
                         manageaddress.setAddress2(unmanageCustomerEntity.getCustomerAddress().getAddress2());
-                    }
-                    else {
+                    } else {
                         manageCustomerEntity.setCustomerAddress(unmanageCustomerEntity.getCustomerAddress());
                     }
                     manageCustomerEntity.setUpdateDateTime(new Date());
@@ -123,7 +122,6 @@ public class BankingServiceImpl implements BankingService {
                     customerRepository.save(manageCustomerEntity);
                     return ResponseEntity.status(HttpStatus.OK).body("Customer details are updated..!");
                 }
-
             }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer Number " + customerNumber + " not found.");
@@ -131,8 +129,33 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public ResponseEntity<Object> deleteCustomer(Long customerNumber) {
-        return null;
+        Optional<Customer> deleteCustomerId = this.customerRepository.findByCustomerNumber(customerNumber);
+        if (!deleteCustomerId.isPresent()) {
+            throw new RuntimeException("Data not found..!");
+        } else {
+            Customer deleteCustInfo = deleteCustomerId.get();
+            customerRepository.delete(deleteCustInfo);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Successfully deleted customer Id");
     }
+
+    @Override
+    public ResponseEntity<Object> softDeleteCustomerId(Long customerNumber) throws Exception {
+        //get customer Id is available o not
+        Optional<Customer> softdelete = this.customerRepository.findByCustomerNumber(customerNumber);
+        if(!softdelete.isPresent()){
+            throw new Exception("Data not found given customer Id..!");
+        }
+        // if customer status already 0 we have to check this condition
+        if(softdelete.get().getStatus()==0) {
+            throw new Exception("Given Customer id already in-active status");
+        }
+        //if custoemr data not 0 we have to set zero value here
+        softdelete.get().setStatus(0);
+        this.customerRepository.save(softdelete.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Customer successfully deleted..!");
+    }
+
 
     @Override
     public ResponseEntity<Object> findByAccountNumber(Long accountNumber) {

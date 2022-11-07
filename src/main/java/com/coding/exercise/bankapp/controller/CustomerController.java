@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +40,14 @@ public class CustomerController {
     public ResponseEntity<Object> updatecustomer(@RequestBody CustomerDetails customerDetails, @PathVariable Long customerNumber) {
         return bankingService.updateCustomer(customerDetails, customerNumber);
 
+    }
+/*    @DeleteMapping("/{customerNumber}")
+    public ResponseEntity<Object> deleteCustomerdeta(@PathVariable Long customerNumber){
+        return bankingService.deleteCustomer(customerNumber);
+    }*/
+    @DeleteMapping("{/customerNumber}")
+    public ResponseEntity<Object> custSoftdelete(@PathVariable Long customerNumber) throws Exception {
+         bankingService.softDeleteCustomerId(customerNumber);
+        return ResponseEntity.status(HttpStatus.OK).body("Successfully deleted..!");
     }
 }

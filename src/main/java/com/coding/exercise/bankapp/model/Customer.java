@@ -29,7 +29,7 @@ public class Customer {
     
     private Long customerNumber;
     
-    private String status;
+    private Integer status;
     
     @ManyToOne(cascade=CascadeType.ALL)
     private Address customerAddress;
