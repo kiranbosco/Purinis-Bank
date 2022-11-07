@@ -69,15 +69,14 @@ public class BankingServiceImpl implements BankingService {
         return ResponseEntity.status(HttpStatus.CREATED).body("Data successfully created..!");
     }
 
-    public CustomerDetails findByCustomerNumber(Long customerNumber) {
-
+    public CustomerDetails findByCustomerNumber(Long customerNumber) throws Exception {
         Optional<Customer> customerEntityOpt = customerRepository.findByCustomerNumber(customerNumber);
-
-        if(customerEntityOpt.isPresent())
-            return bankingServiceHelper.convertToCustomerDomain(customerEntityOpt.get());
-
-        return null;
+        if (!customerEntityOpt.isPresent()) {
+            throw new Exception("Data Not found..!");
+        }
+        return bankingServiceHelper.convertToCustomerDomain(customerEntityOpt.get());
     }
+
 
     @Override
     public ResponseEntity<Object> updateCustomer(CustomerDetails customerDetails, Long customerNumber) {

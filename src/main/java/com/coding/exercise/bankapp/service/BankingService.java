@@ -15,7 +15,7 @@ public interface BankingService {
 
     public ResponseEntity<Object> addCustomer(CustomerDetails customerDetails) throws Exception;
     
-    public CustomerDetails findByCustomerNumber(Long customerNumber);
+    public CustomerDetails findByCustomerNumber(Long customerNumber) throws Exception;
     
     public ResponseEntity<Object> updateCustomer(CustomerDetails customerDetails, Long customerNumber);
     
