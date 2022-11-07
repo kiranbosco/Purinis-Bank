@@ -4,6 +4,7 @@ import com.coding.exercise.bankapp.domain.AccountInformation;
 import com.coding.exercise.bankapp.domain.CustomerDetails;
 import com.coding.exercise.bankapp.domain.TransactionDetails;
 import com.coding.exercise.bankapp.domain.TransferDetails;
+import com.coding.exercise.bankapp.model.Account;
 import com.coding.exercise.bankapp.model.Address;
 import com.coding.exercise.bankapp.model.Contact;
 import com.coding.exercise.bankapp.model.Customer;
@@ -158,8 +159,12 @@ public class BankingServiceImpl implements BankingService {
 
 
     @Override
-    public ResponseEntity<Object> findByAccountNumber(Long accountNumber) {
-        return null;
+    public AccountInformation findByAccountNumber(Long accountNumber) throws Exception {
+        Optional<Account> findcustAccnum = this.accountRepository.findByAccountNumber(accountNumber);
+        if(!findcustAccnum.isPresent()){
+            throw new Exception("Customer account not found..!");
+        }
+        return bankingServiceHelper.convertToAccountDomain(findcustAccnum.get());
     }
 
     @Override

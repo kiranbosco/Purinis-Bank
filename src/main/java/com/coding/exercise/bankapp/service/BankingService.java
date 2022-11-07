@@ -7,7 +7,6 @@ import com.coding.exercise.bankapp.domain.TransferDetails;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BankingService {
 
@@ -23,7 +22,7 @@ public interface BankingService {
 
     public ResponseEntity<Object> softDeleteCustomerId(Long customerNumber) throws Exception;
     
-    public ResponseEntity<Object> findByAccountNumber(Long accountNumber);
+    public AccountInformation findByAccountNumber(Long accountNumber) throws Exception;
     
     public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber);
     

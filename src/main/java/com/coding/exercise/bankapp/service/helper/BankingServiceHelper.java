@@ -34,13 +34,23 @@ public class BankingServiceHelper {
                 .build();
     }
 
-    public AccountInformation convertAccountDomain(Account account) {
+    public AccountInformation convertToAccountDomain(Account account) {
+
         return AccountInformation.builder()
-                .accountBalance(account.getAccountBalance())
                 .accountType(account.getAccountType())
-                .accountStatus(account.getAccountStatus())
+                .accountBalance(account.getAccountBalance())
                 .accountNumber(account.getAccountNumber())
-                .bankInformation(convertTobankDomain(account.getBankInformation()))
+                .accountStatus(account.getAccountStatus())
+                .bankInformation(convertToBankInfoDomain(account.getBankInformation()))
+                .build();
+    }
+    public BankInformation convertToBankInfoDomain(BankInfo bankInfo) {
+
+        return BankInformation.builder()
+                .branchCode(bankInfo.getBranchCode())
+                .branchName(bankInfo.getBranchName())
+                .routingNumber(bankInfo.getRoutingNumber())
+                .branchAddress(convertToAddressDomain(bankInfo.getBranchAddress()))
                 .build();
     }
 
