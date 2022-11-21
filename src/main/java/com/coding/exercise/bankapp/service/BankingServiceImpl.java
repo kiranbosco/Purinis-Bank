@@ -183,6 +183,30 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public ResponseEntity<Object> transferDetails(TransferDetails transferDetails, Long customerNumber) {
+
+        List<Account> accountEntities = new ArrayList<>();
+        Account fromAccountEntry = null;
+        Account toAccountEntry = null;
+//find the customer is available or not
+        Optional<Customer> customerEntityOpt = this.customerRepository.findByCustomerNumber(customerNumber);
+        if (customerEntityOpt.isPresent()) {
+            // Get accoount information
+            Optional<Account> toAccountEntityOpt = this.accountRepository.findByAccountNumber(transferDetails.getFromAccountNumber());
+            if (toAccountEntityOpt.isPresent()) {
+                fromAccountEntry = toAccountEntityOpt.get();
+            } else {
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body("from account number not found" + transferDetails.getFromAccountNumber());
+            }
+            // if not sufficient fund return 400 bad request
+            if (fromAccountEntry.getAccountBalance() < transferDetails.getTransferAmount()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient fund");
+            } else {
+                synchronized (this) {
+                    // Update from account 
+                }
+            }
+        }
+
         return null;
     }
 
