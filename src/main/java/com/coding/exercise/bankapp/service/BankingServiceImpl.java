@@ -4,10 +4,7 @@ import com.coding.exercise.bankapp.domain.AccountInformation;
 import com.coding.exercise.bankapp.domain.CustomerDetails;
 import com.coding.exercise.bankapp.domain.TransactionDetails;
 import com.coding.exercise.bankapp.domain.TransferDetails;
-import com.coding.exercise.bankapp.model.Account;
-import com.coding.exercise.bankapp.model.Address;
-import com.coding.exercise.bankapp.model.Contact;
-import com.coding.exercise.bankapp.model.Customer;
+import com.coding.exercise.bankapp.model.*;
 import com.coding.exercise.bankapp.repository.AccountRepository;
 import com.coding.exercise.bankapp.repository.CustomerAccountXRefRepository;
 import com.coding.exercise.bankapp.repository.CustomerRepository;
@@ -36,7 +33,8 @@ public class BankingServiceImpl implements BankingService {
     private TransactionRepository transactionRepository;
     @Autowired
     private CustomerAccountXRefRepository customerAccountXRefRepository;
-
+    @Autowired
+    private CustomerAccountXRefRepository custAccXRefRepository;
     @Autowired
     private BankingServiceHelper bankingServiceHelper;
 
@@ -144,11 +142,11 @@ public class BankingServiceImpl implements BankingService {
     public ResponseEntity<Object> softDeleteCustomerId(Long customerNumber) throws Exception {
         //get customer Id is available o not
         Optional<Customer> softdelete = this.customerRepository.findByCustomerNumber(customerNumber);
-        if(!softdelete.isPresent()){
+        if (!softdelete.isPresent()) {
             throw new Exception("Data not found given customer Id..!");
         }
         // if customer status already 0 we have to check this condition
-        if(softdelete.get().getStatus()==0) {
+        if (softdelete.get().getStatus() == 0) {
             throw new Exception("Given Customer id already in-active status");
         }
         //if custoemr data not 0 we have to set zero value here
@@ -161,7 +159,7 @@ public class BankingServiceImpl implements BankingService {
     @Override
     public AccountInformation findByAccountNumber(Long accountNumber) throws Exception {
         Optional<Account> findcustAccnum = this.accountRepository.findByAccountNumber(accountNumber);
-        if(!findcustAccnum.isPresent()){
+        if (!findcustAccnum.isPresent()) {
             throw new Exception("Customer account not found..!");
         }
         return bankingServiceHelper.convertToAccountDomain(findcustAccnum.get());
@@ -169,7 +167,18 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber) {
-        return null;
+
+        Optional<Customer> custEntityOption = this.customerRepository.findByCustomerNumber(customerNumber);
+        if (custEntityOption.isPresent()) {
+            accountRepository.save(bankingServiceHelper.convertToAccountEntity(accountInformation));
+
+            // Add an entry to the CustomerAccountXRef
+            custAccXRefRepository.save(CustomerAccountXRef.builder()
+                    .accountNumber(accountInformation.getAccountNumber())
+                    .customerNumber(accountInformation.getAccountNumber())
+                    .build());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body("success fuly created ");
     }
 
     @Override

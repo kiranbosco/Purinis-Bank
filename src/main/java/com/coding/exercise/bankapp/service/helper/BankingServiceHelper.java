@@ -21,6 +21,25 @@ public class BankingServiceHelper {
                 .customerAddress(convertToAddressDomain(customer.getCustomerAddress()))
                 .build();
     }
+    public Account convertToAccountEntity(AccountInformation accInfo) {
+
+        return Account.builder()
+                .accountType(accInfo.getAccountType())
+                .accountBalance(accInfo.getAccountBalance())
+                .accountNumber(accInfo.getAccountNumber())
+                .accountStatus(accInfo.getAccountStatus())
+                .bankInformation(convertToBankInfoEntity(accInfo.getBankInformation()))
+                .build();
+    }
+    public BankInfo convertToBankInfoEntity(BankInformation bankInformation) {
+
+        return BankInfo.builder()
+                .branchCode(bankInformation.getBranchCode())
+                .branchName(bankInformation.getBranchName())
+                .routingNumber(bankInformation.getRoutingNumber())
+                .branchAddress(convertToAddressEntity(bankInformation.getBranchAddress()))
+                .build();
+    }
 
     public Customer convertoCustomerEntity(CustomerDetails customerDetails) {
         return Customer.builder()
