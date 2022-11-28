@@ -139,7 +139,7 @@ public class BankingServiceHelper {
                 .build();
     }
 
-    public Transaction convertTotransactionDomain(TransactionDetails transactionDetails) {
+    public TransactionDetails convertTotransactionDomain(Transaction transactionDetails) {
         return Transaction.builder()
                 .accountNumber(transactionDetails.getAccountNumber())
                 .txAmount(transactionDetails.getTxAmount())

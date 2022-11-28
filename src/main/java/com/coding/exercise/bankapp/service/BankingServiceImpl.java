@@ -165,20 +165,22 @@ public class BankingServiceImpl implements BankingService {
         return bankingServiceHelper.convertToAccountDomain(findcustAccnum.get());
     }
 
-    @Override
     public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber) {
 
-        Optional<Customer> custEntityOption = this.customerRepository.findByCustomerNumber(customerNumber);
-        if (custEntityOption.isPresent()) {
+        Optional<Customer> customerEntityOpt = customerRepository.findByCustomerNumber(customerNumber);
+
+        if (customerEntityOpt.isPresent()) {
             accountRepository.save(bankingServiceHelper.convertToAccountEntity(accountInformation));
 
             // Add an entry to the CustomerAccountXRef
             custAccXRefRepository.save(CustomerAccountXRef.builder()
                     .accountNumber(accountInformation.getAccountNumber())
-                    .customerNumber(accountInformation.getAccountNumber())
+                    .customerNumber(customerNumber)
                     .build());
+
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body("success fuly created ");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("New Account created successfully.");
     }
 
     @Override
@@ -202,16 +204,50 @@ public class BankingServiceImpl implements BankingService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient fund");
             } else {
                 synchronized (this) {
-                    // Update from account 
+                    // Update from account
+                    fromAccountEntry.setAccountBalance(toAccountEntry.getAccountBalance() + transferDetails.getTransferAmount());
+                    fromAccountEntry.setUpdateDateTime(toAccountEntry.getUpdateDateTime());
+                    accountEntities.add(fromAccountEntry);
+
+                    //Update to account
+                    toAccountEntry.setAccountBalance(toAccountEntry.getAccountBalance() + transferDetails.getTransferAmount());
+                    toAccountEntry.setUpdateDateTime(toAccountEntry.getUpdateDateTime());
+                    accountEntities.add(toAccountEntry);
+
+                    accountRepository.saveAll(accountEntities);
+
+                    //Creation transaction From account
+                    Transaction transaction = bankingServiceHelper.createTransaction(transferDetails, fromAccountEntry.getAccountNumber(), "Debit");
+                    transactionRepository.save(transaction);
+
+                    //Create transaction  to account
+                    Transaction transaction1 = bankingServiceHelper.createTransaction(transferDetails, toAccountEntry.getAccountNumber(), "Credit");
+                    transactionRepository.save(transaction1);
                 }
+                return ResponseEntity.status(HttpStatus.OK).body("Amount has been transferred..!");
             }
+
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer Number " + customerNumber + " not found.");
+
         }
 
-        return null;
     }
 
     @Override
     public List<TransactionDetails> findTransactionsByAccountNumber(Long accountNumber) {
-        return null;
+        List<TransactionDetails> transactionDetails = new ArrayList<>();
+        Optional<Account> optionalAccount = this.accountRepository.findByAccountNumber(accountNumber);
+        if (optionalAccount.isPresent()) {
+            Optional<List<Transaction>> transactionDetailInput = this.transactionRepository.findByAccountNumber(accountNumber);
+            if (transactionDetailInput.isPresent()) {
+                transactionDetailInput.get().forEach(transaction -> {
+                    transactionDetails.add(bankingServiceHelper.convertTotransactionDomain(transaction));
+                });
+            }
+
+        }
+
+        return transactionDetails;
     }
 }
