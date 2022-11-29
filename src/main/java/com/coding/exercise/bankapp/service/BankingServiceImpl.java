@@ -183,71 +183,95 @@ public class BankingServiceImpl implements BankingService {
         return ResponseEntity.status(HttpStatus.CREATED).body("New Account created successfully.");
     }
 
-    @Override
     public ResponseEntity<Object> transferDetails(TransferDetails transferDetails, Long customerNumber) {
 
         List<Account> accountEntities = new ArrayList<>();
-        Account fromAccountEntry = null;
-        Account toAccountEntry = null;
-//find the customer is available or not
-        Optional<Customer> customerEntityOpt = this.customerRepository.findByCustomerNumber(customerNumber);
-        if (customerEntityOpt.isPresent()) {
-            // Get accoount information
-            Optional<Account> toAccountEntityOpt = this.accountRepository.findByAccountNumber(transferDetails.getFromAccountNumber());
-            if (toAccountEntityOpt.isPresent()) {
-                fromAccountEntry = toAccountEntityOpt.get();
-            } else {
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body("from account number not found" + transferDetails.getFromAccountNumber());
-            }
-            // if not sufficient fund return 400 bad request
-            if (fromAccountEntry.getAccountBalance() < transferDetails.getTransferAmount()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient fund");
-            } else {
-                synchronized (this) {
-                    // Update from account
-                    fromAccountEntry.setAccountBalance(toAccountEntry.getAccountBalance() + transferDetails.getTransferAmount());
-                    fromAccountEntry.setUpdateDateTime(toAccountEntry.getUpdateDateTime());
-                    accountEntities.add(fromAccountEntry);
+        Account fromAccountEntity = null;
+        Account toAccountEntity = null;
 
-                    //Update to account
-                    toAccountEntry.setAccountBalance(toAccountEntry.getAccountBalance() + transferDetails.getTransferAmount());
-                    toAccountEntry.setUpdateDateTime(toAccountEntry.getUpdateDateTime());
-                    accountEntities.add(toAccountEntry);
+        Optional<Customer> customerEntityOpt = customerRepository.findByCustomerNumber(customerNumber);
+
+        // If customer is present
+        if(customerEntityOpt.isPresent()) {
+
+            // get FROM ACCOUNT info
+            Optional<Account> fromAccountEntityOpt = accountRepository.findByAccountNumber(transferDetails.getFromAccountNumber());
+            if(fromAccountEntityOpt.isPresent()) {
+                fromAccountEntity = fromAccountEntityOpt.get();
+            }
+            else {
+                // if from request does not exist, 404 Bad Request
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("From Account Number " + transferDetails.getFromAccountNumber() + " not found.");
+            }
+
+
+            // get TO ACCOUNT info
+            Optional<Account> toAccountEntityOpt = accountRepository.findByAccountNumber(transferDetails.getToAccountNumber());
+            if(toAccountEntityOpt.isPresent()) {
+                toAccountEntity = toAccountEntityOpt.get();
+            }
+            else {
+                // if from request does not exist, 404 Bad Request
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("To Account Number " + transferDetails.getToAccountNumber() + " not found.");
+            }
+
+
+            // if not sufficient funds, return 400 Bad Request
+            if(fromAccountEntity.getAccountBalance() < transferDetails.getTransferAmount()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient Funds.");
+            }
+            else {
+                synchronized (this) {
+                    // update FROM ACCOUNT
+                    fromAccountEntity.setAccountBalance(fromAccountEntity.getAccountBalance() - transferDetails.getTransferAmount());
+                    fromAccountEntity.setUpdateDateTime(new Date());
+                    accountEntities.add(fromAccountEntity);
+
+                    // update TO ACCOUNT
+                    toAccountEntity.setAccountBalance(toAccountEntity.getAccountBalance() + transferDetails.getTransferAmount());
+                    toAccountEntity.setUpdateDateTime(new Date());
+                    accountEntities.add(toAccountEntity);
 
                     accountRepository.saveAll(accountEntities);
 
-                    //Creation transaction From account
-                    Transaction transaction = bankingServiceHelper.createTransaction(transferDetails, fromAccountEntry.getAccountNumber(), "Debit");
-                    transactionRepository.save(transaction);
+                    // Create transaction for FROM Account
+                    Transaction fromTransaction = bankingServiceHelper.createTransaction(transferDetails, fromAccountEntity.getAccountNumber(), "DEBIT");
+                    transactionRepository.save(fromTransaction);
 
-                    //Create transaction  to account
-                    Transaction transaction1 = bankingServiceHelper.createTransaction(transferDetails, toAccountEntry.getAccountNumber(), "Credit");
-                    transactionRepository.save(transaction1);
+                    // Create transaction for TO Account
+                    Transaction toTransaction = bankingServiceHelper.createTransaction(transferDetails, toAccountEntity.getAccountNumber(), "CREDIT");
+                    transactionRepository.save(toTransaction);
                 }
-                return ResponseEntity.status(HttpStatus.OK).body("Amount has been transferred..!");
+
+                return ResponseEntity.status(HttpStatus.OK).body("Success: Amount transferred for Customer Number " + customerNumber);
             }
 
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer Number " + customerNumber + " not found.");
-
         }
 
     }
 
-    @Override
+    /**
+     * Get all transactions for a specific account
+     *
+     * @param accountNumber
+     * @return
+     */
     public List<TransactionDetails> findTransactionsByAccountNumber(Long accountNumber) {
         List<TransactionDetails> transactionDetails = new ArrayList<>();
-        Optional<Account> optionalAccount = this.accountRepository.findByAccountNumber(accountNumber);
-        if (optionalAccount.isPresent()) {
-            Optional<List<Transaction>> transactionDetailInput = this.transactionRepository.findByAccountNumber(accountNumber);
-            if (transactionDetailInput.isPresent()) {
-                transactionDetailInput.get().forEach(transaction -> {
-                    transactionDetails.add(bankingServiceHelper.convertTotransactionDomain(transaction));
+        Optional<Account> accountEntityOpt = accountRepository.findByAccountNumber(accountNumber);
+        if(accountEntityOpt.isPresent()) {
+            Optional<List<Transaction>> transactionEntitiesOpt = transactionRepository.findByAccountNumber(accountNumber);
+            if(transactionEntitiesOpt.isPresent()) {
+                transactionEntitiesOpt.get().forEach(transaction -> {
+                    transactionDetails.add(bankingServiceHelper.convertToTransactionDomain(transaction));
                 });
             }
-
         }
 
         return transactionDetails;
     }
+
+
 }

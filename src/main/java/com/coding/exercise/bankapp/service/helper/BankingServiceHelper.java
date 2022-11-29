@@ -2,9 +2,13 @@ package com.coding.exercise.bankapp.service.helper;
 
 import com.coding.exercise.bankapp.domain.*;
 import com.coding.exercise.bankapp.model.*;
+import com.coding.exercise.bankapp.service.BankingService;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class BankingServiceHelper {
@@ -139,15 +143,15 @@ public class BankingServiceHelper {
                 .build();
     }
 
-    public TransactionDetails convertTotransactionDomain(Transaction transactionDetails) {
-        return Transaction.builder()
-                .accountNumber(transactionDetails.getAccountNumber())
-                .txAmount(transactionDetails.getTxAmount())
-                .txType(transactionDetails.getTxType())
+    public TransactionDetails convertToTransactionDomain(Transaction transaction) {
+
+        return TransactionDetails.builder()
+                .txAmount(transaction.getTxAmount())
+                .txDateTime(transaction.getTxDateTime())
+                .txType(transaction.getTxType())
+                .accountNumber(transaction.getAccountNumber())
                 .build();
-
     }
-
     public Transaction createTransaction(TransferDetails transferDetails, Long accountNumber, String txType) {
 
         return Transaction.builder()
