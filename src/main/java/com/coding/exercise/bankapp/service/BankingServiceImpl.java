@@ -61,6 +61,9 @@ public class BankingServiceImpl implements BankingService {
     @Override
     public ResponseEntity<Object> addCustomer(CustomerDetails customerDetails) throws Exception {
         Customer customer = bankingServiceHelper.convertoCustomerEntity(customerDetails);
+        if(customer.getCustomerNumber()==null || customer.getCustomerNumber().equals("")){
+            throw new Exception("getCustomerNumber should not be empty");
+        }
         customer.setCreateDateTime(new Date());
         Optional<Customer> findCustomerId = this.customerRepository.findByCustomerNumber(customer.getCustomerNumber());
         if (findCustomerId.isPresent()) {
@@ -168,7 +171,6 @@ public class BankingServiceImpl implements BankingService {
     public ResponseEntity<Object> addNewAccount(AccountInformation accountInformation, Long customerNumber) {
 
         Optional<Customer> customerEntityOpt = customerRepository.findByCustomerNumber(customerNumber);
-
         if (customerEntityOpt.isPresent()) {
             accountRepository.save(bankingServiceHelper.convertToAccountEntity(accountInformation));
 
