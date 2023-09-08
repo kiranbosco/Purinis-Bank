@@ -53,7 +53,7 @@ public class BankingServiceImpl implements BankingService {
                 allCustomerDetails.add(bankingServiceHelper.convertToCustomerDomain(customer));
             });
         } else {
-            throw new Exception("Data not found exception..!");
+            throw new RuntimeException("Data not found exeception ..!");
         }
         return allCustomerDetails;
     }
@@ -61,7 +61,7 @@ public class BankingServiceImpl implements BankingService {
     @Override
     public ResponseEntity<Object> addCustomer(CustomerDetails customerDetails) throws Exception {
         Customer customer = bankingServiceHelper.convertoCustomerEntity(customerDetails);
-        if(customer.getCustomerNumber()==null || customer.getCustomerNumber().equals("")){
+        if (customer.getCustomerNumber() == null || customer.getCustomerNumber().equals("")) {
             throw new Exception("getCustomerNumber should not be empty");
         }
         customer.setCreateDateTime(new Date());
@@ -194,14 +194,13 @@ public class BankingServiceImpl implements BankingService {
         Optional<Customer> customerEntityOpt = customerRepository.findByCustomerNumber(customerNumber);
 
         // If customer is present
-        if(customerEntityOpt.isPresent()) {
+        if (customerEntityOpt.isPresent()) {
 
             // get FROM ACCOUNT info
             Optional<Account> fromAccountEntityOpt = accountRepository.findByAccountNumber(transferDetails.getFromAccountNumber());
-            if(fromAccountEntityOpt.isPresent()) {
+            if (fromAccountEntityOpt.isPresent()) {
                 fromAccountEntity = fromAccountEntityOpt.get();
-            }
-            else {
+            } else {
                 // if from request does not exist, 404 Bad Request
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("From Account Number " + transferDetails.getFromAccountNumber() + " not found.");
             }
@@ -209,20 +208,18 @@ public class BankingServiceImpl implements BankingService {
 
             // get TO ACCOUNT info
             Optional<Account> toAccountEntityOpt = accountRepository.findByAccountNumber(transferDetails.getToAccountNumber());
-            if(toAccountEntityOpt.isPresent()) {
+            if (toAccountEntityOpt.isPresent()) {
                 toAccountEntity = toAccountEntityOpt.get();
-            }
-            else {
+            } else {
                 // if from request does not exist, 404 Bad Request
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("To Account Number " + transferDetails.getToAccountNumber() + " not found.");
             }
 
 
             // if not sufficient funds, return 400 Bad Request
-            if(fromAccountEntity.getAccountBalance() < transferDetails.getTransferAmount()) {
+            if (fromAccountEntity.getAccountBalance() < transferDetails.getTransferAmount()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient Funds.");
-            }
-            else {
+            } else {
                 synchronized (this) {
                     // update FROM ACCOUNT
                     fromAccountEntity.setAccountBalance(fromAccountEntity.getAccountBalance() - transferDetails.getTransferAmount());
@@ -263,9 +260,9 @@ public class BankingServiceImpl implements BankingService {
     public List<TransactionDetails> findTransactionsByAccountNumber(Long accountNumber) {
         List<TransactionDetails> transactionDetails = new ArrayList<>();
         Optional<Account> accountEntityOpt = accountRepository.findByAccountNumber(accountNumber);
-        if(accountEntityOpt.isPresent()) {
+        if (accountEntityOpt.isPresent()) {
             Optional<List<Transaction>> transactionEntitiesOpt = transactionRepository.findByAccountNumber(accountNumber);
-            if(transactionEntitiesOpt.isPresent()) {
+            if (transactionEntitiesOpt.isPresent()) {
                 transactionEntitiesOpt.get().forEach(transaction -> {
                     transactionDetails.add(bankingServiceHelper.convertToTransactionDomain(transaction));
                 });
