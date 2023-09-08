@@ -22,5 +22,7 @@ public class CustomerDetails {
     private AddressDetails customerAddress;
     
     private ContactDetails contactDetails;
-    
+
+    private Long adhar_number;
+
 }

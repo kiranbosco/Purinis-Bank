@@ -21,6 +21,7 @@ public class BankingServiceHelper {
                 .lastName(customer.getLastName())
                 .customerNumber(customer.getCustomerNumber())
                 .status(customer.getStatus())
+                .adhar_number(customer.getAdhar_number())
                 .contactDetails(convertTocontactDomain(customer.getContactDetails()))
                 .customerAddress(convertToAddressDomain(customer.getCustomerAddress()))
                 .build();
@@ -52,6 +53,7 @@ public class BankingServiceHelper {
                 .middleName(customerDetails.getMiddleName())
                 .customerNumber(customerDetails.getCustomerNumber())
                 .status(customerDetails.getStatus())
+                .adhar_number(customerDetails.getAdhar_number())
                 .contactDetails(convertTocontactEntity(customerDetails.getContactDetails()))
                 .customerAddress(convertToAddressEntity(customerDetails.getCustomerAddress()))
                 .build();

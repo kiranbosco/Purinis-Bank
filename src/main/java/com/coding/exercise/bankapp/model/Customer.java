@@ -30,7 +30,9 @@ public class Customer {
     private Long customerNumber;
     
     private Integer status;
-    
+
+    private Long adhar_number;
+
     @ManyToOne(cascade=CascadeType.ALL)
     private Address customerAddress;
     
